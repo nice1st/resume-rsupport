@@ -93,6 +93,8 @@ public class NoticeController {
     @DeleteMapping("/api/v1/notices/{id}")
     public ResponseEntity<Object> removeNotice(@PathVariable("id") long id) {
 
+        noticeService.removeNoticeById(id);
+
         return ResponseEntity.noContent().build();
     }
 }

@@ -23,7 +23,7 @@ public class ExecuteTimeAop {
 
         stopWatch.stop();
 
-        log.debug("ExecuteTime ::: ", stopWatch.getTotalTimeMillis() + "ms");
+        log.debug("ExecuteTime ::: " + stopWatch.getTotalTimeMillis() + "ms");
 
         return result;
     }

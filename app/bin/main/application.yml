@@ -14,4 +14,5 @@ spring:
         dialect: org.hibernate.dialect.H2Dialect
 logging:
   level:
-    root: debug
+    root: info
+    com.bahwa.aop.ExecuteTimeAop: debug
