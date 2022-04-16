@@ -29,10 +29,9 @@
 
 ## Tool
 
+* VSCode
 * gradle
 * git
-* Jenkins
-* Docker
 
 # 설계
 
