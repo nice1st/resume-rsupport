@@ -9,7 +9,9 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum NoticeErrorResult {
     
-    시작일이_종료일보다_빠름(HttpStatus.BAD_REQUEST, "시작일이 종료일보다 빠름"),
+    시작일이_종료일보다_빠름(HttpStatus.BAD_REQUEST, "시작일이_종료일보다_빠름"),
+    수정_할_공지사항이_없음(HttpStatus.BAD_REQUEST, "수정_할_공지사항이_없음"),
+    삭제_할_공지사항이_없음(HttpStatus.BAD_REQUEST, "삭제_할_공지사항이_없음"),
     ;
 
     private final HttpStatus httpStatus;
