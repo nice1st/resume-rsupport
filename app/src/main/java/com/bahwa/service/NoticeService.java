@@ -11,6 +11,9 @@ import com.bahwa.exception.NoticeErrorResult;
 import com.bahwa.exception.NoticeException;
 import com.bahwa.repository.NoticeRepository;
 
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -38,6 +41,7 @@ public class NoticeService {
         return noticeRepository.save(notice);
     }
 
+    // @Cacheable(value = "notice", key = "#id") // views 계속 업데이트
     public Optional<Notice> getNoticeById(Long id) {
 
         Optional<Notice> result = noticeRepository.findById(id);
@@ -51,11 +55,13 @@ public class NoticeService {
         return result;
     }
 
+    @Cacheable("notice")
     public List<Notice> getNoticeAll() {
         
         return noticeRepository.findAllByBetweenPeriodDateTime();
     }
 
+    @CachePut(value = "notice", key = "#dto.id")
     public Notice updateNotice(Long id, NoticeDto dto) {
 
         Notice notice = this.getNoticeById(id).orElseThrow(() -> new NoticeException(NoticeErrorResult.수정_할_공지사항이_없음));
@@ -69,6 +75,7 @@ public class NoticeService {
         return noticeRepository.save(notice);
     }
 
+    @CacheEvict(value = "notice", key = "#id")
     public void removeNoticeById(Long id) {
 
         Notice notice = this.getNoticeById(id).orElseThrow(() -> new NoticeException(NoticeErrorResult.삭제_할_공지사항이_없음));
