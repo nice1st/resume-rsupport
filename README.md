@@ -63,6 +63,6 @@
 
 # 실행방법
 
-* > gradle clean
-* > gradle build
-* > gradle bootrun
+    * >gradle clean
+    * >gradle build
+    * >gradle bootrun
