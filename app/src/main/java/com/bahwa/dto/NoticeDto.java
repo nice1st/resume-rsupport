@@ -18,7 +18,6 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class NoticeDto {
 
-    private Long id;
     @NotBlank
     private String title;
     @NotBlank
@@ -28,8 +27,4 @@ public class NoticeDto {
     @NotNull
     private LocalDateTime periodStart;
     private LocalDateTime periodEnd;
-    private LocalDateTime createdDate;
-    private LocalDateTime modifiedDate;
-    private Long views;
-    private Boolean isDeleted;
 }

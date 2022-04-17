@@ -199,7 +199,7 @@ public class NoticeControllerTest {
                 .modifiedWriter(modifiedWriter)
                 .modifiedDate(LocalDateTime.now())
                 .build()
-            ).when(noticeService).updateNotice(any(NoticeDto.class));
+            ).when(noticeService).updateNotice(eq(id), any(NoticeDto.class));
 
         ResultActions resultActions = mockMvc.perform(
             MockMvcRequestBuilders.put(url + "/" + id)
@@ -223,7 +223,7 @@ public class NoticeControllerTest {
                 .periodEnd(now.plusDays(2L))
                 .build();
 
-        doThrow(NoticeException.class).when(noticeService).updateNotice(any(NoticeDto.class));
+        doThrow(NoticeException.class).when(noticeService).updateNotice(eq(id), any(NoticeDto.class));
 
         ResultActions resultActions = mockMvc.perform(
             MockMvcRequestBuilders.put(url + "/" + id)

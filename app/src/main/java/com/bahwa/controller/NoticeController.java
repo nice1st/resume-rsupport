@@ -83,9 +83,8 @@ public class NoticeController {
             throw new NoticeException(NoticeErrorResult.시작일이_종료일보다_빠름);
         }
 
-        dto.setId(id);
         dto.setModifiedWriter(modifiedWriter);
-        Notice updatedNotice = noticeService.updateNotice(dto);
+        Notice updatedNotice = noticeService.updateNotice(id, dto);
         
         return ResponseEntity.ok(updatedNotice);
     }

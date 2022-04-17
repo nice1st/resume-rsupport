@@ -10,7 +10,9 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.Type;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -26,6 +28,7 @@ import lombok.NoArgsConstructor;
 @Data
 @Builder
 @DynamicInsert
+@DynamicUpdate
 @NoArgsConstructor
 @AllArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
@@ -50,7 +53,6 @@ public class Notice {
     @Column(nullable = false)
     private LocalDateTime periodStart;
     
-    @Column()
     private LocalDateTime periodEnd;
 
     @Column()
@@ -62,10 +64,12 @@ public class Notice {
     private LocalDateTime modifiedDate;
 
     @Column(nullable = false)
+    @ColumnDefault(value = "0")
     @Builder.Default
     private Long views = 0L;
     
     @Column(name = "is_delete", nullable = false, length = 1)
+    @ColumnDefault(value = "'N'")
     @Type(type = "yes_no")
     @Builder.Default
     private Boolean isDeleted = false;

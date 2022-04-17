@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.Executor;
 
 import javax.validation.ConstraintViolationException;
 
@@ -22,6 +23,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
@@ -32,6 +34,9 @@ public class NoticeServiceTest {
     
     @Mock
     private NoticeRepository noticeRepository;
+
+    @Spy
+    private Executor executor;
 
     private final LocalDateTime now = LocalDateTime.now();
     private final Long id = 1L;
@@ -91,7 +96,6 @@ public class NoticeServiceTest {
         String modifiedWriter = "수정" + writer;
 
         NoticeDto updateDto = NoticeDto.builder()
-                .id(id)
                 .title("수정" + title)
                 .contents("수정" + contents)
                 .periodStart(now.plusDays(1L))
@@ -99,14 +103,14 @@ public class NoticeServiceTest {
                 .build();
 
         doReturn(Optional.of(Notice.builder()
-                .id(updateDto.getId())
+                .id(id)
                 .title(title)
                 .contents(contents)
                 .build()
-            )).when(noticeRepository).findById(updateDto.getId());
+            )).when(noticeRepository).findById(id);
 
         doReturn(Notice.builder()
-                .id(updateDto.getId())
+                .id(id)
                 .title(updateDto.getTitle())
                 .contents(updateDto.getContents())
                 .periodStart(updateDto.getPeriodStart())
@@ -116,7 +120,7 @@ public class NoticeServiceTest {
                 .build()
             ).when(noticeRepository).save(any(Notice.class));
 
-        Notice result = target.updateNotice(updateDto);
+        Notice result = target.updateNotice(id, updateDto);
         
         assertThat(result).isNotNull();
         assertThat(result.getId()).isNotNull();
@@ -131,16 +135,15 @@ public class NoticeServiceTest {
     public void 수정실패_잘못된_ID() {
         
         NoticeDto updateDto = NoticeDto.builder()
-                .id(id)
                 .title("수정" + title)
                 .contents("수정" + contents)
                 .periodStart(now.plusDays(1L))
                 .periodEnd(now.plusDays(2L))
                 .build();
 
-        doReturn(Optional.empty()).when(noticeRepository).findById(updateDto.getId());
+        doReturn(Optional.empty()).when(noticeRepository).findById(id);
 
-        NoticeException result = assertThrows(NoticeException.class, () -> target.updateNotice(updateDto));
+        NoticeException result = assertThrows(NoticeException.class, () -> target.updateNotice(id, updateDto));
 
         assertThat(result.getNoticeErrorResult()).isEqualTo(NoticeErrorResult.수정_할_공지사항이_없음);
     }
@@ -161,6 +164,14 @@ public class NoticeServiceTest {
         NoticeException result = assertThrows(NoticeException.class, () -> target.removeNoticeById(id));
 
         assertThat(result.getNoticeErrorResult()).isEqualTo(NoticeErrorResult.삭제_할_공지사항이_없음);
+    }
+
+    @Test
+    public void 카운트_증가() {
+        
+        target.incrementViews(Notice.builder().id(id).views(0L).build());
+
+        verify(noticeRepository, times(1)).save(any(Notice.class));
     }
 
 }

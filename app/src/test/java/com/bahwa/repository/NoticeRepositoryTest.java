@@ -3,6 +3,7 @@ package com.bahwa.repository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.context.annotation.Import;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.doReturn;
@@ -12,9 +13,11 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 
+import com.bahwa.configuration.QueryDslConfiguration;
 import com.bahwa.entity.Notice;
 
 @DataJpaTest
+@Import(QueryDslConfiguration.class)
 public class NoticeRepositoryTest {
     
     @Autowired
@@ -71,5 +74,13 @@ public class NoticeRepositoryTest {
         Notice result = noticeRepository.save(notice);
 
         noticeRepository.deleteById(result.getId());
+    }
+
+    @Test
+    public void 조회_전체_DSL() {
+
+        List<Notice> result = noticeRepository.findAllByBetweenPeriodDateTime();
+
+        assertThat(result.size()).isGreaterThan(-1);
     }
 }
