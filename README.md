@@ -57,6 +57,8 @@
 
 # 제약사항
 
-* VSCode 에서 디버그 모드로 실행 시 QueryDSL 동작이상
-    * 아래 참고하여 확장 프로그램 다운그레이드시 정상 동작
-    * https://www.inflearn.com/questions/35226
+# 실행방법
+
+* > gradle clean
+* > gradle build
+* > gradle bootrun
