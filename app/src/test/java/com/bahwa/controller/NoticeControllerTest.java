@@ -6,6 +6,7 @@ import com.bahwa.entity.Notice;
 import com.bahwa.exception.ControllerExceptionHandler;
 import com.bahwa.exception.NoticeException;
 import com.bahwa.gson.GsonLocalDateTimeAdapter;
+import com.bahwa.service.AttachmentsService;
 import com.bahwa.service.NoticeService;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -18,21 +19,30 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.mock.web.MockPart;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.request.RequestPostProcessor;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.multipart.MultipartFile;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.mockito.Mockito.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.Executor;
 import java.util.stream.Stream;
 
 @ExtendWith(MockitoExtension.class)
@@ -43,6 +53,12 @@ public class NoticeControllerTest {
 
     @Mock
     private NoticeService noticeService;
+
+    @Mock
+    private AttachmentsService attachmentsService;
+
+    @Spy
+    private Executor executor;
 
     private MockMvc mockMvc;
     private Gson gson;
@@ -65,21 +81,28 @@ public class NoticeControllerTest {
     @Test
     public void 등록성공() throws Exception {
         
+        
         doReturn(Notice.builder().id(id).title(title).contents(contents).periodStart(now).build()).when(noticeService).addNotice(any(NoticeDto.class));
-
+        
         NoticeDto dto = NoticeDto.builder()
-            .title(title)
-            .contents(contents)
-            .periodStart(now)
-            .build();
+        .title(title)
+        .contents(contents)
+        .periodStart(now)
+        .build();
+
+        MockMultipartFile mockfile1 = new MockMultipartFile("file", "test1.PNG", MediaType.IMAGE_PNG_VALUE, "test1".getBytes());
+        MockMultipartFile mockfile2 = new MockMultipartFile("file", "test2.PNG", MediaType.IMAGE_PNG_VALUE, "test2".getBytes());
+        MockMultipartFile jsonFile = new MockMultipartFile("noticeDto", "", "application/json", gson.toJson(dto).getBytes());
 
         ResultActions resultActions = mockMvc.perform(
-            MockMvcRequestBuilders.post(url)
+            multipart(url)
+                .file(mockfile1)
+                .file(mockfile2)
+                .file(jsonFile)
                 .header(NoticeConstants.WRITER_HEADER, writer)
-                .content(gson.toJson(dto))
-                .contentType(MediaType.APPLICATION_JSON)
         );
-
+                
+        resultActions.andDo(print());
         resultActions.andExpect(status().isCreated());
     }
 
@@ -201,13 +224,24 @@ public class NoticeControllerTest {
                 .build()
             ).when(noticeService).updateNotice(eq(id), any(NoticeDto.class));
 
+        MockMultipartFile mockfile1 = new MockMultipartFile("file", "test1.PNG", MediaType.IMAGE_PNG_VALUE, "test1".getBytes());
+        MockMultipartFile jsonFile = new MockMultipartFile("noticeDto", "", "application/json", gson.toJson(updateDto).getBytes());
+
         ResultActions resultActions = mockMvc.perform(
-            MockMvcRequestBuilders.put(url + "/" + id)
-                .header(NoticeConstants.WRITER_HEADER, modifiedWriter)
-                .content(gson.toJson(updateDto))
-                .contentType(MediaType.APPLICATION_JSON)
+            multipart(url + "/" + id)
+                .file(mockfile1)
+                .file(jsonFile)
+                .header(NoticeConstants.WRITER_HEADER, writer)
+                .with(new RequestPostProcessor() {
+                    @Override
+                    public MockHttpServletRequest postProcessRequest(MockHttpServletRequest request) {
+                        request.setMethod("PUT");
+                        return request;
+                    }
+                })
         );
         
+        resultActions.andDo(print());
         resultActions.andExpect(status().isOk());
     }
 
@@ -225,11 +259,21 @@ public class NoticeControllerTest {
 
         doThrow(NoticeException.class).when(noticeService).updateNotice(eq(id), any(NoticeDto.class));
 
+        MockMultipartFile mockfile1 = new MockMultipartFile("file", "test1.PNG", MediaType.IMAGE_PNG_VALUE, "test1".getBytes());
+        MockMultipartFile jsonFile = new MockMultipartFile("noticeDto", "", "application/json", gson.toJson(updateDto).getBytes());
+
         ResultActions resultActions = mockMvc.perform(
-            MockMvcRequestBuilders.put(url + "/" + id)
-                .header(NoticeConstants.WRITER_HEADER, modifiedWriter)
-                .content(gson.toJson(updateDto))
-                .contentType(MediaType.APPLICATION_JSON)
+            multipart(url + "/" + id)
+                .file(mockfile1)
+                .file(jsonFile)
+                .header(NoticeConstants.WRITER_HEADER, writer)
+                .with(new RequestPostProcessor() {
+                    @Override
+                    public MockHttpServletRequest postProcessRequest(MockHttpServletRequest request) {
+                        request.setMethod("PUT");
+                        return request;
+                    }
+                })
         );
 
         resultActions.andExpect(status().isBadRequest());
