@@ -5,6 +5,8 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
+import javax.transaction.Transactional;
+
 import com.bahwa.dto.NoticeDto;
 import com.bahwa.entity.Notice;
 import com.bahwa.exception.NoticeErrorResult;
@@ -15,7 +17,6 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 
@@ -25,8 +26,6 @@ import lombok.RequiredArgsConstructor;
 public class NoticeService {
     
     private final NoticeRepository noticeRepository;
-
-    private final Executor executor;
 
     public Notice addNotice(NoticeDto dto) {
 
@@ -45,12 +44,6 @@ public class NoticeService {
     public Optional<Notice> getNoticeById(Long id) {
 
         Optional<Notice> result = noticeRepository.findById(id);
-        
-        if (result.isPresent()) {
-            // 조회수 증가 // 비동기
-            // this.incrementViews(result.get());
-            CompletableFuture.runAsync(() -> incrementViews(result.get()), executor);
-        }
 
         return result;
     }

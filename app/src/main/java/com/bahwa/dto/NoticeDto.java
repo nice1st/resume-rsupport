@@ -1,10 +1,13 @@
 package com.bahwa.dto;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+
+import com.bahwa.entity.Attachments;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -32,4 +35,6 @@ public class NoticeDto {
     @NotNull
     private LocalDateTime periodStart;
     private LocalDateTime periodEnd;
+
+    // private List<Attachments> attachmentsList;
 }

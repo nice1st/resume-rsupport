@@ -1,13 +1,18 @@
 package com.bahwa.entity;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.ColumnDefault;
@@ -73,4 +78,8 @@ public class Notice {
     @Type(type = "yes_no")
     @Builder.Default
     private Boolean isDeleted = false;
+
+    @OneToMany(mappedBy = "notice", fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE}) 
+    @Builder.Default
+    private List<Attachments> attachmentsList = new ArrayList<>();
 }

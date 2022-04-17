@@ -83,7 +83,7 @@ public class NoticeServiceTest {
         doReturn(Arrays.asList(
             Notice.builder().build(),
             Notice.builder().build()
-        )).when(noticeRepository).findAll();
+        )).when(noticeRepository).findAllByBetweenPeriodDateTime();
 
         List<Notice> result = target.getNoticeAll();
 
