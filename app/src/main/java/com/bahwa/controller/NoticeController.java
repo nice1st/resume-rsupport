@@ -18,8 +18,6 @@ import javax.validation.Valid;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Executor;
 
 @RestController
 @RequiredArgsConstructor
@@ -30,8 +28,6 @@ public class NoticeController {
 
     private final AttachmentsService attachmentsService;
 
-    private final Executor executor;
-    
     @PostMapping("/api/v1/notices")
     public ResponseEntity<Notice> addNotice(
             @RequestHeader(NoticeConstants.WRITER_HEADER) String writer,
@@ -61,11 +57,7 @@ public class NoticeController {
 
         Optional<Notice> result = noticeService.getNoticeByIdWithIncrementView(id);
 
-        if (result.isPresent()) {
-            return ResponseEntity.ok(result.get());
-        } else {
-            return ResponseEntity.noContent().build();
-        }
+        return result.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.noContent().build());
     }
 
     @GetMapping("/api/v1/notices")

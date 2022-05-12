@@ -1,30 +1,24 @@
 package com.bahwa.service;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.catchThrowable;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.*;
-
-import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import java.util.concurrent.Executor;
-
-import javax.validation.ConstraintViolationException;
-
 import com.bahwa.dto.NoticeDto;
 import com.bahwa.entity.Notice;
 import com.bahwa.exception.NoticeErrorResult;
 import com.bahwa.exception.NoticeException;
 import com.bahwa.repository.NoticeRepository;
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class NoticeServiceTest {
@@ -40,8 +34,6 @@ public class NoticeServiceTest {
     private final String writer = "user1";
     private final String title = "title1";
     private final String contents = "contents1234567890";
-
-    private final String modifyWriter = "user2";
 
     @Test
     public void 등록성공() {

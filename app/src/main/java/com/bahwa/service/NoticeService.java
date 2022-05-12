@@ -9,7 +9,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.dao.PessimisticLockingFailureException;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -39,9 +38,7 @@ public class NoticeService {
     // @Cacheable(value = "notice", key = "#id") // views 계속 업데이트
     public Optional<Notice> getNoticeById(Long id) {
 
-        Optional<Notice> result = noticeRepository.findById(id);
-
-        return result;
+        return noticeRepository.findById(id);
     }
 
     @Cacheable("notice")
@@ -81,7 +78,7 @@ public class NoticeService {
 
     public Optional<Notice> getNoticeByIdWithIncrementView(Long id) {
 
-        Optional<Notice> result = null;
+        Optional<Notice> result;
         try {
             result = noticeRepository.findWithPessimisticLockById(id);
         } catch (Exception e) {
@@ -89,9 +86,9 @@ public class NoticeService {
             throw e;
         }
 
-        if (!result.isPresent()) {
+        if (result.isEmpty()) {
             return result;
-        };
+        }
 
         this.incrementViews(result.get());
 
