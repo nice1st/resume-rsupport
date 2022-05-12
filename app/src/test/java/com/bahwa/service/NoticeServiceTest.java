@@ -35,9 +35,6 @@ public class NoticeServiceTest {
     @Mock
     private NoticeRepository noticeRepository;
 
-    @Spy
-    private Executor executor;
-
     private final LocalDateTime now = LocalDateTime.now();
     private final Long id = 1L;
     private final String writer = "user1";
@@ -168,7 +165,7 @@ public class NoticeServiceTest {
 
     @Test
     public void 카운트_증가() {
-        
+
         target.incrementViews(Notice.builder().id(id).views(0L).build());
 
         verify(noticeRepository, times(1)).save(any(Notice.class));

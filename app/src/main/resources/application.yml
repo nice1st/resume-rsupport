@@ -5,9 +5,14 @@ spring:
       max-request-size: 20MB # total request size for a multipart/form-data cannot exceed 20MB. 
   datasource: # Datasource
     driver-class-name: org.h2.Driver 
-    url: jdbc:h2:mem:db;DB_CLOSE_DELAY=-1
+    url: jdbc:h2:mem:db;DB_CLOSE_DELAY=-1;LOCK_TIMEOUT=2000
     username: h2test 
-    password: h2test 
+    password: h2test
+
+    hikari:
+      connection-timeout: 15000
+      maximum-pool-size: 10
+      max-lifetime: 15000
   jpa: # JPA 
     generate-ddl: true 
     open-in-view: false 
@@ -15,7 +20,7 @@ spring:
       ddl-auto: create-drop 
     properties: 
       hibernate: 
-        show_sql: true
+        show_sql: false
         format_sql: true
         dialect: org.hibernate.dialect.H2Dialect
 

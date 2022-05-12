@@ -1,24 +1,20 @@
 package com.bahwa.service;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Executor;
-
-import javax.transaction.Transactional;
-
 import com.bahwa.dto.NoticeDto;
 import com.bahwa.entity.Notice;
 import com.bahwa.exception.NoticeErrorResult;
 import com.bahwa.exception.NoticeException;
 import com.bahwa.repository.NoticeRepository;
-
+import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.dao.PessimisticLockingFailureException;
 import org.springframework.stereotype.Service;
 
-import lombok.RequiredArgsConstructor;
+import javax.transaction.Transactional;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -81,5 +77,24 @@ public class NoticeService {
         notice.setViews(notice.getViews() + 1);
 
         noticeRepository.save(notice);
+    }
+
+    public Optional<Notice> getNoticeByIdWithIncrementView(Long id) {
+
+        Optional<Notice> result = null;
+        try {
+            result = noticeRepository.findWithPessimisticLockById(id);
+        } catch (Exception e) {
+            // H2 에러 처리 못함. https://blog.mimacom.com/handling-pessimistic-locking-jpa-oracle-mysql-postgresql-derbi-h2/
+            throw e;
+        }
+
+        if (!result.isPresent()) {
+            return result;
+        };
+
+        this.incrementViews(result.get());
+
+        return result;
     }
 }
